@@ -4,7 +4,7 @@
 		"modid": "${modId}",
 		"name": "${modName}",
 		"description": "A mixins patch to (finally) fix problem with water and particles render order.",
-		"version": "${modVersion}",
+		"version": "1.0.1",
 		"mcversion": "${minecraftVersion}",
 		"updateUrl": "",
 		"authorList": ["Sergius Onesimus"],
