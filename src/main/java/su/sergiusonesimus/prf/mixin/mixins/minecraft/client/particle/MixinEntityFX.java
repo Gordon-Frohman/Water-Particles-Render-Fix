@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,8 +29,17 @@ public class MixinEntityFX extends MixinEntity implements IMixinEntityFX {
         this.isBehindWater = isBehindWater;
     }
 
+    @Inject(method = "<init>(Lnet/minecraft/world/World;DDD)V", at = @At("TAIL"))
+    protected void init(World p_i1218_1_, double p_i1218_2_, double p_i1218_4_, double p_i1218_6_, CallbackInfo ci) {
+        checkIfBehindWater();
+    }
+
     @Inject(method = "onUpdate", at = @At("TAIL"))
     public void onUpdate(CallbackInfo ci) {
+        checkIfBehindWater();
+    }
+
+    public void checkIfBehindWater() {
         // Raytracing to check if particle is obscured by liquid
         this.isBehindWater = false;
         EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
