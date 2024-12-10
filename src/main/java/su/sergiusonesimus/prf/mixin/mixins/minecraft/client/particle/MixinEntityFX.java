@@ -1,7 +1,6 @@
 package su.sergiusonesimus.prf.mixin.mixins.minecraft.client.particle;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.particle.EntityFX;
@@ -19,29 +18,29 @@ import su.sergiusonesimus.prf.mixin.mixins.minecraft.entity.MixinEntity;
 @Mixin(EntityFX.class)
 public class MixinEntityFX extends MixinEntity implements IMixinEntityFX {
 
-    public boolean isBehindWater = false;
+    public boolean isBehindTransparent = false;
 
     public boolean getIsBehindWater() {
-        return isBehindWater;
+        return isBehindTransparent;
     }
 
     public void setIsBehindWater(boolean isBehindWater) {
-        this.isBehindWater = isBehindWater;
+        this.isBehindTransparent = isBehindWater;
     }
 
     @Inject(method = "<init>(Lnet/minecraft/world/World;DDD)V", at = @At("TAIL"))
     protected void init(World p_i1218_1_, double p_i1218_2_, double p_i1218_4_, double p_i1218_6_, CallbackInfo ci) {
-        checkIfBehindWater();
+        checkIfBehindTransparent();
     }
 
     @Inject(method = "onUpdate", at = @At("TAIL"))
     public void onUpdate(CallbackInfo ci) {
-        checkIfBehindWater();
+        checkIfBehindTransparent();
     }
 
-    public void checkIfBehindWater() {
-        // Raytracing to check if particle is obscured by liquid
-        this.isBehindWater = false;
+    public void checkIfBehindTransparent() {
+        // Raytracing to check if particle is obscured by a transparent block
+        this.isBehindTransparent = false;
         EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
         double currentX = player.posX;
         double currentY = player.posY + player.eyeHeight;
@@ -68,8 +67,8 @@ public class MixinEntityFX extends MixinEntity implements IMixinEntityFX {
                 prevBlockY = currentBlockY;
                 prevBlockZ = currentBlockZ;
                 Block currentBlock = worldObj.getBlock(currentBlockX, currentBlockY, currentBlockZ);
-                if (currentBlock instanceof BlockLiquid) {
-                    this.isBehindWater = true;
+                if (currentBlock.getRenderBlockPass() == 1) {
+                    this.isBehindTransparent = true;
                     break;
                 }
             }
